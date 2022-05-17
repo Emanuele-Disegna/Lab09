@@ -10,8 +10,10 @@ import java.util.Set;
 
 import org.jgrapht.Graph;
 import org.jgrapht.Graphs;
+import org.jgrapht.alg.connectivity.ConnectivityInspector;
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.SimpleGraph;
+import org.jgrapht.traverse.BreadthFirstIterator;
 
 import it.polito.tdp.borders.db.BordersDAO;
 
@@ -25,7 +27,6 @@ public class Model {
 	public Model() {
 		grafo = new SimpleGraph<Country, DefaultEdge>(DefaultEdge.class);
 		dao = new BordersDAO();
-		countries = dao.loadAllCountries();
 	
 	}
 
@@ -67,9 +68,31 @@ public class Model {
 		return Graphs.neighborListOf(grafo, c).size();
 	}
 	
+	public int getComponenteConnessa(Country c) {
+		ConnectivityInspector<Country,DefaultEdge> conn = new ConnectivityInspector<>(grafo);
+		return conn.connectedSetOf(c).size();
+	}
+	
 	public Map<Integer,Country> getCountries() {
+		if(countries==null) {
+			countries = dao.loadAllCountries();
+		}
 		return countries;
 	}
 	
+	public List<Country> getRaggiungibili(Country c, int anno) {
+		if(grafo.vertexSet().size()==0) {
+			creaGrafo(anno);
+		}
+		
+		BreadthFirstIterator<Country,DefaultEdge> visita = new BreadthFirstIterator<>(grafo,c);
+		List<Country> res = new ArrayList<>();
+		
+		while(visita.hasNext()) {
+			res.add(visita.next());
+		}
+		
+		return res;
+	}
 	
 }
