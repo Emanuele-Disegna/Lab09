@@ -25,16 +25,15 @@ public class Model {
 	private List<Border> borders;
 	
 	public Model() {
-		grafo = new SimpleGraph<Country, DefaultEdge>(DefaultEdge.class);
 		dao = new BordersDAO();
 	
 	}
 
-
-
 	public void creaGrafo (int anno) {
 		
 		borders = new ArrayList<>(dao.getCountryPairs(anno));
+		
+		grafo = new SimpleGraph<Country, DefaultEdge>(DefaultEdge.class);
 		
 		Graphs.addAllVertices(grafo, countries.values());
 		
